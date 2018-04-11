@@ -21,22 +21,23 @@ int main(int argc, char **argv)
 
   // Subscriberとしてpara_inputというトピックがSubscribeし、トピックが更新されたときは
   // chatterCallbackという名前のコールバック関数を実行する
-  ros::Subscriber sub = n.subscribe("hokuyo3d/point_cloud2", 1000, tfCallback);
+  ros::Subscriber sub = n.subscribe("hokuyo3d/point_cloud2", 10, tfCallback);
 
-  ros::Publisher pub = n.advertise<sensor_msgs::PointCloud2>("point_raw", 1000);
+  ros::Publisher pub = n.advertise<sensor_msgs::PointCloud2>("point_raw", 10);
 
   ros::Rate loop_rate(200);
 
   int count = 0;
   while (ros::ok())//ノードが実行中は基本的にros::ok()=1
   {
+    ros::spinOnce();
+
     //printf("LOOP=%d\n", count);
 
     if(sub){
       pub.publish(msg);//PublishのAPI
     }
 
-    ros::spinOnce();
     loop_rate.sleep();
 
     count++;
