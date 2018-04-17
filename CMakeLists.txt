@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
+  #PCL REQUIRED
 )
 
 ## System dependencies are found with CMake's conventions
@@ -119,6 +120,7 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  #${PCL_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -151,6 +153,7 @@ add_executable(${PROJECT_NAME}_broadcaster src/tf4hokuyo3d_broadcaster.cpp)
 target_link_libraries(
   ${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
+  #${PCL_LIBRARY_DIRS}
 )
 target_link_libraries(
   ${PROJECT_NAME}_broadcaster

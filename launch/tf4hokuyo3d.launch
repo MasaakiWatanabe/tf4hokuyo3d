@@ -1,6 +1,8 @@
 <launch>
-      <node pkg="tf" type="static_transform_publisher" 
-            name="tf4static_hokuyo3d2robotpose" args="0 0 0 0 0 3.14 hokuyo3d robot_pose 100"/>
+      <param name="use_sim_time" value="true" />
 
-      <node pkg="tf4hokuyo3d" type="tf4hokuyo3d_node" name="tf4hokuyo3d" />
+      <node pkg="tf" type="static_transform_publisher" 
+            name="tf4static_hokuyo3d2robotpose" args="0 0 0 0 0 3.14 hokuyo3d robot_pose 200"/>
+
+      <!-- <node pkg="tf4hokuyo3d" type="tf4hokuyo3d_node" name="tf4hokuyo3d_node" /> -->
 </launch>
