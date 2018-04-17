@@ -1,48 +1,25 @@
-#include "ros/ros.h"
+#include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
 #include <sensor_msgs/PointCloud2.h>
 
-sensor_msgs::PointCloud2 msg;
+std::string turtle_name;
 
-
-// Subscribeする対象のトピックが更新されたら呼び出されるコールバック関数
-// 引数にはトピックにPublishされるメッセージの型と同じ型を定義する
-void tfCallback(const sensor_msgs::PointCloud2 a_msg)
-{
-  msg = a_msg;
-  printf("Receive width=%d\n", a_msg.width);
+void tfCallback(const sensor_msgs::PointCloud2 a_msg){
+  static tf::TransformBroadcaster br;
+  tf::Transform transform;
+  transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+  tf::Quaternion q;
+  q.setRPY(M_PI, 0.0, 0.0);
+  transform.setRotation(q);
+  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "hokuyo3d", "/hokuyo3d_pose"));
 }
 
-int main(int argc, char **argv)
-{
-  // 初期化のためのAPI
-  ros::init(argc, argv, "tf4hokuyo3d");
-  // ノードハンドラの宣言
-  ros::NodeHandle n;
+int main(int argc, char** argv){
+  ros::init(argc, argv, "tf4hokuyo3d_broadcaster");
 
-  // Subscriberとしてpara_inputというトピックがSubscribeし、トピックが更新されたときは
-  // chatterCallbackという名前のコールバック関数を実行する
-  ros::Subscriber sub = n.subscribe("hokuyo3d/point_cloud2", 10, tfCallback);
+  ros::NodeHandle node;
+  ros::Subscriber sub = node.subscribe("/hokuyo3d/hokuyo_cloud2", 10, &tfCallback);
 
-  ros::Publisher pub = n.advertise<sensor_msgs::PointCloud2>("point_raw", 10);
-
-  ros::Rate loop_rate(200);
-
-  int count = 0;
-  while (ros::ok())//ノードが実行中は基本的にros::ok()=1
-  {
-    ros::spinOnce();
-
-    //printf("LOOP=%d\n", count);
-
-    if(sub){
-      pub.publish(msg);//PublishのAPI
-    }
-
-    loop_rate.sleep();
-
-    count++;
-  }
-
-
+  ros::spin();
   return 0;
-}
+};
