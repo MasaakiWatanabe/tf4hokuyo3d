@@ -12,7 +12,7 @@ class TransformHokuyo3dPointCloud{
 public:
 
   ros::NodeHandle n_;
-  tf::TransformListener listener_;
+  tf::TransformListener tf_listener_;
   ros::Publisher scan_pub_;
   ros::Subscriber scan_sub_;
 
@@ -25,18 +25,15 @@ public:
 
   void scanCallback (const sensor_msgs::PointCloud scan_in)
   {
-    sensor_msgs::PointCloud msg1;
-    sensor_msgs::PointCloud2 cloud;
+    sensor_msgs::PointCloud cloud;
+    sensor_msgs::PointCloud2 cloud2;
     try
     {
       ROS_INFO("Receive time=%u.%u", scan_in.header.stamp.sec, scan_in.header.stamp.nsec);
 
-      listener_.waitForTransform("/hokuyo3d", "/robot_pose", scan_in.header.stamp, ros::Duration(0.05));
-      ROS_INFO("Callback123");
-      listener_.transformPointCloud("hokuyo3d", scan_in.header.stamp, scan_in, "robot_pose", msg1);
-      ROS_INFO("Callback4456");
-      sensor_msgs::convertPointCloudToPointCloud2(msg1, cloud);
-      ROS_INFO("Callback789");
+      tf_listener_.waitForTransform("/hokuyo3d", "/robot_pose", scan_in.header.stamp, ros::Duration(0.05));
+      tf_listener_.transformPointCloud("hokuyo3d", scan_in.header.stamp, scan_in, "robot_pose", cloud);
+      sensor_msgs::convertPointCloudToPointCloud2(cloud, cloud2);
 
     }
     catch (tf::TransformException& e)
@@ -45,7 +42,7 @@ public:
         return;
     }
 
-    scan_pub_.publish(cloud);
+    scan_pub_.publish(cloud2);
   }
 };
 
